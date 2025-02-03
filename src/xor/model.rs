@@ -17,7 +17,6 @@ pub struct XorModelConfig {
 }
 
 impl XorModelConfig {
-    /// Returns the initialized model.
     pub fn init<B: Backend>(&self, device: &B::Device) -> XorModel<B> {
         XorModel {
             linear1: LinearConfig::new(2, self.hidden_size).init(device),
@@ -25,5 +24,15 @@ impl XorModelConfig {
             linear3: LinearConfig::new(self.hidden_size, 1).init(device),
             sigmoid4: Sigmoid::new(),
         }
+    }
+}
+
+impl<B: Backend> XorModel<B> {
+    pub fn forward(&self, ab_pairs: Tensor<B, 2>) -> Tensor<B, 2> {
+        let x = ab_pairs;
+        let x = self.linear1.forward(x);
+        let x = self.leaky_relu2.forward(x);
+        let x = self.linear3.forward(x);
+        self.sigmoid4.forward(x)
     }
 }
