@@ -1,7 +1,14 @@
 use burn::{
-    nn::{LeakyRelu, LeakyReluConfig, Linear, LinearConfig, Sigmoid},
+    nn::{
+        loss::BinaryCrossEntropyLossConfig, LeakyRelu, LeakyReluConfig, Linear, LinearConfig,
+        Sigmoid,
+    },
     prelude::*,
+    tensor::backend::AutodiffBackend,
+    train::{ClassificationOutput, TrainOutput, TrainStep, ValidStep},
 };
+
+use super::data::XorBatch;
 
 #[derive(Module, Debug)]
 pub struct XorModel<B: Backend> {
@@ -9,6 +16,44 @@ pub struct XorModel<B: Backend> {
     leaky_relu2: LeakyRelu,
     linear3: Linear<B>,
     sigmoid4: Sigmoid,
+}
+
+impl<B: Backend> XorModel<B> {
+    pub fn forward(&self, ab_pairs: Tensor<B, 2>) -> Tensor<B, 2> {
+        let x = self.linear1.forward(ab_pairs);
+        let x = self.leaky_relu2.forward(x);
+        let x = self.linear3.forward(x);
+        self.sigmoid4.forward(x)
+    }
+}
+
+impl<B: Backend> XorModel<B> {
+    pub fn forward_classification(
+        &self,
+        ab_pairs: Tensor<B, 2>,
+        axorbs: Tensor<B, 1, Int>,
+    ) -> ClassificationOutput<B> {
+        let prediction = self.forward(ab_pairs);
+        let loss = BinaryCrossEntropyLossConfig::new()
+            .init(&prediction.device())
+            .forward(prediction.clone().reshape([-1]), axorbs.clone());
+
+        ClassificationOutput::new(loss, prediction, axorbs)
+    }
+}
+
+impl<B: AutodiffBackend> TrainStep<XorBatch<B>, ClassificationOutput<B>> for XorModel<B> {
+    fn step(&self, batch: XorBatch<B>) -> TrainOutput<ClassificationOutput<B>> {
+        let item = self.forward_classification(batch.ab_pairs, batch.axorbs);
+
+        TrainOutput::new(self, item.loss.backward(), item)
+    }
+}
+
+impl<B: Backend> ValidStep<XorBatch<B>, ClassificationOutput<B>> for XorModel<B> {
+    fn step(&self, batch: XorBatch<B>) -> ClassificationOutput<B> {
+        self.forward_classification(batch.ab_pairs, batch.axorbs)
+    }
 }
 
 #[derive(Config, Debug)]
@@ -24,15 +69,5 @@ impl XorModelConfig {
             linear3: LinearConfig::new(self.hidden_size, 1).init(device),
             sigmoid4: Sigmoid::new(),
         }
-    }
-}
-
-impl<B: Backend> XorModel<B> {
-    pub fn forward(&self, ab_pairs: Tensor<B, 2>) -> Tensor<B, 2> {
-        let x = ab_pairs;
-        let x = self.linear1.forward(x);
-        let x = self.leaky_relu2.forward(x);
-        let x = self.linear3.forward(x);
-        self.sigmoid4.forward(x)
     }
 }

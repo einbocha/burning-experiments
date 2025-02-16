@@ -24,8 +24,8 @@ fn xor_dataset() -> InMemDataset<XorItem> {
 }
 
 pub struct XorBatch<B: Backend> {
-    ab_pairs: Tensor<B, 2>,
-    axorbs: Tensor<B, 1, Int>,
+    pub ab_pairs: Tensor<B, 2>,
+    pub axorbs: Tensor<B, 1, Int>,
 }
 
 #[derive(Clone)]
