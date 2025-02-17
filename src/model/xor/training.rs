@@ -26,7 +26,7 @@ pub struct XorTrainingConfig {
     pub num_workers: usize,
     #[config(default = 432952)]
     pub seed: u64,
-    #[config(default = 1.0e-4)]
+    #[config(default = 1.0e-2)]
     pub learning_rate: f64,
 }
 
