@@ -1,3 +1,5 @@
+pub mod training;
+
 use burn::{
     nn::{
         loss::BinaryCrossEntropyLossConfig, LeakyRelu, LeakyReluConfig, Linear, LinearConfig,

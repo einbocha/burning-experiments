@@ -3,12 +3,13 @@ use burn::{
     prelude::*,
 };
 
-struct XorItem {
+#[derive(Debug, Clone)]
+pub struct XorItem {
     ab: [bool; 2],
     axorb: bool,
 }
 
-fn xor_dataset() -> InMemDataset<XorItem> {
+pub fn xor_dataset() -> InMemDataset<XorItem> {
     let mut pairs: Vec<XorItem> = vec![];
 
     for a in 0..=1 {
@@ -23,6 +24,7 @@ fn xor_dataset() -> InMemDataset<XorItem> {
     InMemDataset::new(pairs)
 }
 
+#[derive(Debug, Clone)]
 pub struct XorBatch<B: Backend> {
     pub ab_pairs: Tensor<B, 2>,
     pub axorbs: Tensor<B, 1, Int>,
