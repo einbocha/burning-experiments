@@ -1,6 +1,7 @@
-mod xor;
+mod data;
+mod model;
 
-use crate::xor::model::XorModelConfig;
+use crate::model::xor::XorModelConfig;
 use burn::backend::Wgpu;
 
 type MyBackend = Wgpu<f32, i32>;

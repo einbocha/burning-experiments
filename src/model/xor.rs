@@ -8,7 +8,7 @@ use burn::{
     train::{ClassificationOutput, TrainOutput, TrainStep, ValidStep},
 };
 
-use super::data::XorBatch;
+use crate::data::xor::XorBatch;
 
 #[derive(Module, Debug)]
 pub struct XorModel<B: Backend> {
