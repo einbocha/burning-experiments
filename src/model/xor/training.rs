@@ -8,10 +8,7 @@ use burn::{
     prelude::*,
     record::CompactRecorder,
     tensor::backend::AutodiffBackend,
-    train::{
-        metric::{AccuracyMetric, LossMetric},
-        LearnerBuilder,
-    },
+    train::{metric::LossMetric, LearnerBuilder},
 };
 
 #[derive(Config)]
@@ -66,8 +63,6 @@ pub fn xor_training<B: AutodiffBackend>(
         .build(datasubset_valid);
 
     let learner = LearnerBuilder::new(artifact_dir)
-        .metric_train_numeric(AccuracyMetric::new())
-        .metric_valid_numeric(AccuracyMetric::new())
         .metric_train_numeric(LossMetric::new())
         .metric_valid_numeric(LossMetric::new())
         .with_file_checkpointer(CompactRecorder::new())
