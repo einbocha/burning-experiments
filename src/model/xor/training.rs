@@ -17,7 +17,7 @@ pub struct XorTrainingConfig {
     pub optimizer: AdamConfig,
     #[config(default = 1000)]
     pub num_epochs: usize,
-    #[config(default = 1)]
+    #[config(default = 4)]
     pub batch_size: usize,
     #[config(default = 1)]
     pub num_workers: usize,

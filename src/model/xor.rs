@@ -17,9 +17,7 @@ pub struct XorModel<B: Backend> {
     linear1: Linear<B>,
     leaky_relu2: LeakyRelu,
     linear3: Linear<B>,
-    leaky_relu4: LeakyRelu,
-    linear5: Linear<B>,
-    sigmoid6: Sigmoid,
+    sigmoid4: Sigmoid,
 }
 
 impl<B: Backend> XorModel<B> {
@@ -27,9 +25,7 @@ impl<B: Backend> XorModel<B> {
         let x = self.linear1.forward(ab_pairs);
         let x = self.leaky_relu2.forward(x);
         let x = self.linear3.forward(x);
-        let x = self.leaky_relu4.forward(x);
-        let x = self.linear5.forward(x);
-        self.sigmoid6.forward(x)
+        self.sigmoid4.forward(x)
     }
 }
 
@@ -70,12 +66,10 @@ pub struct XorModelConfig {
 impl XorModelConfig {
     pub fn init<B: Backend>(&self, device: &B::Device) -> XorModel<B> {
         XorModel {
-            linear1: LinearConfig::new(2, 2).init(device),
+            linear1: LinearConfig::new(2, self.hidden_size).init(device),
             leaky_relu2: LeakyReluConfig::new().init(),
-            linear3: LinearConfig::new(2, self.hidden_size).init(device),
-            leaky_relu4: LeakyReluConfig::new().init(),
-            linear5: LinearConfig::new(self.hidden_size, 1).init(device),
-            sigmoid6: Sigmoid::new(),
+            linear3: LinearConfig::new(self.hidden_size, 1).init(device),
+            sigmoid4: Sigmoid::new(),
         }
     }
 }
